@@ -14,6 +14,14 @@ object EntityPropBuilders {
       success(e)
     }
   }
+
+  def optional[T : ClassManifest](s: String): ReadWrite[Entity, Option[T]] = new ReadWrite[Entity, Option[T]] {
+    def read(e: Entity) = success(e.property[T](s))
+    def put(t: Option[T], e: Entity) = {
+      e.setProperty(s, t.getOrElse(null))
+      success(e)
+    }
+  }
   
   def newType[T, U <: NewType[T]](fieldName: String, f: T => U)(implicit m: ClassManifest[T]) = 
     string[T](fieldName) >< (f, ((_: NewType[T]).value))
@@ -25,6 +33,7 @@ trait StringW {
     EntityPropBuilders.newType[T, U](s, f)
   
   def prop[T : ClassManifest] = EntityPropBuilders.string[T](s) 
+  def optProp[T : ClassManifest] = EntityPropBuilders.optional[T](s)
 }
 
 trait NewTypeConsW[T, U <: NewType[T]] {

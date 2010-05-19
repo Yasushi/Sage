@@ -3,6 +3,7 @@ package sage
 import hprops._
 import scalaz._
 import Scalaz._
+import metascala.HLists._
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
 import com.google.appengine.api.datastore._
@@ -30,4 +31,16 @@ class PropertySuite extends SageSuiteBase {
     e.setProperty("a", "value")
     abProp.read(e).fail.toOption should equal (none)
   }
+
+  test("optional properties") {
+    val abProp = "a".prop[String] :: "b".optProp[String] 
+    
+    val e = new Entity("some_kind")
+    abProp.read(e).fail.toOption.map(_.list) should equal (some(missing("a") :: nil))
+  
+    e.setProperty("a", "aValue")
+    println(abProp.read(e).success.toOption)
+    abProp.read(e).success.toOption should equal (some(success("aValue" :: None :: HNil)))
+  }
+
 }
