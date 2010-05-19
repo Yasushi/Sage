@@ -26,5 +26,12 @@ class FindSuite extends SageSuiteBase {
     val hatsNamedA = Hats.find.query("type" ?== "a").iterable
     
     hatsNamedA map (_.value) should equal (List(Hat("a", 1)))
+
+    (Hats.find.query("price" ?> 1).iterable.map(_.value)) should equal (List(Hat("b", 2)))
+    (Hats.find.query("price" ?>= 2).iterable.map(_.value)) should equal (List(Hat("b", 2)))
+    (Hats.find.query("price" ?> 2).iterable.map(_.value)) should equal (List())
+    (Hats.find.query("price" ?< 2).iterable.map(_.value)) should equal (List(Hat("a", 1)))
+    (Hats.find.query("price" ?<= 1).iterable.map(_.value)) should equal (List(Hat("a", 1)))
+    (Hats.find.query("price" ?⊂ List(1)).iterable.map(_.value)) should equal (List(Hat("a", 1)))
   }
 }

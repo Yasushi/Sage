@@ -33,6 +33,12 @@ trait FindDSL {
   def ?==[T](t: T): QRY = (_.addFilter(field, EQUAL, t))
 
   def ?!=[T](t: T): QRY = (_.addFilter(field, NOT_EQUAL, t))
+
+  def ?>[T](t: T): QRY = (_.addFilter(field, GREATER_THAN, t))
+  def ?>=[T](t: T): QRY = (_.addFilter(field, GREATER_THAN_OR_EQUAL, t))
+  def ?<[T](t: T): QRY = (_.addFilter(field, LESS_THAN, t))
+  def ?<=[T](t: T): QRY = (_.addFilter(field, LESS_THAN_OR_EQUAL, t))
+  def ?⊂[T <: Iterable[_]](t: T): QRY = (_.addFilter(field, IN, scala.collection.JavaConversions.asIterable(t)))
 }
 
 trait FindDSLImplicits {
