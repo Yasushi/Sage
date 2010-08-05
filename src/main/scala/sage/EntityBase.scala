@@ -35,6 +35,11 @@ trait EntityBase[T] {
     val got = (() => ds.get(KeyFactory.createKey(kind, id))).throws.toOption
     for (entity <- got; t <- read(entity)) yield (Keyed(entity.getKey, t))
   }
+
+  def lookup(key: Key)(implicit ds: DatastoreService): Option[Keyed[T]] = {
+    val got = (() => ds.get(key)).throws.toOption
+    for (entity <- got; t <- read(entity)) yield (Keyed(entity.getKey, t))
+  }
   
   def childrenOf(pk: Key)(implicit ds: DatastoreService): Iterable[Keyed[T]] = {
     find.query(qry => qry.setAncestor(pk)).iterable

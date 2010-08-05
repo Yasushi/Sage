@@ -69,6 +69,7 @@ class ExampleSuite extends SageSuiteBase {
     val r = hats << hat
  
     hats.lookup(r.key.getId) map (_.value) should equal (Some(hat))
+    hats.lookup(r.key) map (_.value) should equal (Some(hat))
   }
   
   
@@ -82,6 +83,7 @@ class ExampleSuite extends SageSuiteBase {
     val r = hats << hat
 
     hats.lookup(r.key.getId) map (_.value) should equal (Some(hat))
+    hats.lookup(r.key) map (_.value) should equal (Some(hat))
   }
   
   test("newtypes as props like this") {
@@ -93,6 +95,7 @@ class ExampleSuite extends SageSuiteBase {
     val r = hats << hat
 
     hats.lookup(r.key.getId) map (_.value) should equal (Some(hat))
+    hats.lookup(r.key) map (_.value) should equal (Some(hat))
   }
   
   test("write many") {
@@ -118,5 +121,6 @@ class AnyValSuite extends SageSuiteBase {
     val r = Numbers << (50l)
     
     Numbers.lookup(r.key.getId) map (_.value) should equal (Some(50l))
+    Numbers.lookup(r.key) map (_.value) should equal (Some(50l))
   }
 }
