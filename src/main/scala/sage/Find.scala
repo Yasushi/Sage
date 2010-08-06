@@ -13,6 +13,9 @@ case class Find[T](base: EntityBase[T], q: Query, fo: FetchOptions) {
 
   def iterable(implicit ds: DatastoreService): Iterable[Keyed[T]] = 
     ds.prepare(q).asIterable(fo) flatMap (e => base.read(e) map (t => Keyed(e.getKey, t)))
+
+  def keys(implicit ds: DatastoreService): Iterable[Key] =
+    ds.prepare(q.setKeysOnly).asIterable(fo) map (_.getKey)
 }
 
 private[sage] object Find {

@@ -33,5 +33,7 @@ class FindSuite extends SageSuiteBase {
     (Hats.find.query("price" ?< 2).iterable.map(_.value)) should equal (List(Hat("a", 1)))
     (Hats.find.query("price" ?<= 1).iterable.map(_.value)) should equal (List(Hat("a", 1)))
     (Hats.find.query("price" ?⊂ List(1)).iterable.map(_.value)) should equal (List(Hat("a", 1)))
+
+    (Hats.find.keys) should equal (keys)
   }
 }
