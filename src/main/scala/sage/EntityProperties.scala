@@ -22,6 +22,23 @@ object EntityPropBuilders {
       success(e)
     }
   }
+
+  def stringNoIndex[T : ClassManifest](s: String): ReadWrite[Entity, T] = new ReadWrite[Entity, T] {
+    def read(e: Entity) = e.property[T](s).toSuccess(missing(s).wrapNel)
+
+    def put(t: T, e: Entity) = {
+      e.setUnindexedProperty(s, t)
+      success(e)
+    }
+  }
+
+  def optionalNoIndex[T : ClassManifest](s: String): ReadWrite[Entity, Option[T]] = new ReadWrite[Entity, Option[T]] {
+    def read(e: Entity) = success(e.property[T](s))
+    def put(t: Option[T], e: Entity) = {
+      e.setUnindexedProperty(s, t.getOrElse(null))
+      success(e)
+    }
+  }
   
   def newType[T, U <: NewType[T]](fieldName: String, f: T => U)(implicit m: ClassManifest[T]) = 
     string[T](fieldName) >< (f, ((_: NewType[T]).value))
@@ -34,6 +51,8 @@ trait StringW {
   
   def prop[T : ClassManifest] = EntityPropBuilders.string[T](s) 
   def optProp[T : ClassManifest] = EntityPropBuilders.optional[T](s)
+  def propNi[T : ClassManifest] = EntityPropBuilders.stringNoIndex[T](s)
+  def optPropNi[T : ClassManifest] = EntityPropBuilders.optionalNoIndex[T](s)
 }
 
 trait NewTypeConsW[T, U <: NewType[T]] {

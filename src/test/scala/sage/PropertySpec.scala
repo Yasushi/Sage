@@ -43,4 +43,12 @@ class PropertySuite extends SageSuiteBase {
     abProp.read(e).success.toOption should equal (some(success("aValue" :: None :: HNil)))
   }
 
+  test("unindexed properties") {
+    val prop = "a".propNi[String]
+
+    val e = new Entity("some_kind")
+    prop.put("aValue", e)
+    e.isUnindexedProperty("a") should be (true)
+  }
+
 }
