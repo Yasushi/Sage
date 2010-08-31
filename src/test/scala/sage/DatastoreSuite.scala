@@ -1,9 +1,8 @@
 package sage
 
 import com.google.appengine.api.datastore._
+import com.google.appengine.tools.development.testing._
 import dev.LocalDatastoreService
-import com.google.appengine.tools.development.ApiProxyLocalImpl
-import com.google.apphosting.api.ApiProxy
 
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
@@ -12,26 +11,18 @@ trait SageSuiteBase extends FunSuite with ShouldMatchers with BeforeAndAfterAll 
 
 trait DatastoreSuite {
   self: BeforeAndAfterAll =>
-  
-  var proxy: ApiProxyLocalImpl = null
-  
-  implicit var datastoreService: DatastoreService = null
-  
-  override def beforeAll {
-    ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment())
-    ApiProxy.setDelegate(new ApiProxyLocalImpl(new java.io.File(".")){})
 
-    proxy = ApiProxy.getDelegate().asInstanceOf[ApiProxyLocalImpl]
-    proxy.setProperty(LocalDatastoreService.NO_STORAGE_PROPERTY, java.lang.Boolean.TRUE.toString())
-    
-    datastoreService = DatastoreServiceFactory.getDatastoreService
+  val helper = new LocalServiceTestHelper(
+    new LocalDatastoreServiceTestConfig().setBackingStoreLocation(".").setNoStorage(true)
+  )
+
+  implicit var datastoreService: DatastoreService = DatastoreServiceFactory.getDatastoreService
+
+  override def beforeAll {
+    helper.setUp
   }
 
   override def afterAll {
-    ApiProxy.setDelegate(null)
-    ApiProxy.setEnvironmentForCurrentThread(null)
-
-    val datastoreService = proxy.getService(LocalDatastoreService.PACKAGE).asInstanceOf[LocalDatastoreService]
-    datastoreService.clearProfiles()
+    helper.tearDown
   }
 }
