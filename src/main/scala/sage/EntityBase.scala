@@ -31,6 +31,12 @@ trait EntityBase[T] {
     keys zip ts map ((k:Key, b:T) => Keyed(k,b)).tupled
   }
   
+  def keyedSave(kts: Seq[Keyed[T]])(implicit ds: DatastoreService): Iterable[Keyed[T]] = {
+    val es = kts map (kt => write(kt.value, new Entity(kt.key)))
+    val keys: Iterable[Key] = ds.put(asIterable(es))
+    keys zip kts map ((k:Key, b:Keyed[T]) => Keyed(k,b.value)).tupled
+  }
+
   def lookup(id: Long)(implicit ds: DatastoreService): Option[Keyed[T]] = {
     val got = (() => ds.get(KeyFactory.createKey(kind, id))).throws.toOption
     for (entity <- got; t <- read(entity)) yield (Keyed(entity.getKey, t))

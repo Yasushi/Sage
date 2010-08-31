@@ -106,6 +106,18 @@ class ExampleSuite extends SageSuiteBase {
     val keys = hats <<++ newHats map (_.key)
     keys map (k => hats.lookup(k.getId).get.value) should equal (newHats)
   }
+  
+  test("write many keyed") {
+    object hats extends Base[Hat]("hats") {
+      def * =  "type".prop[String] :: Price.prop  >< (Hat <-> Hat.unapply _)
+    }
+    val newHats = List(Keyed(KeyFactory.createKey(hats.kind, "a"),
+                             Hat("a", Price(1))),
+                       Keyed(KeyFactory.createKey(hats.kind, "b"),
+                             Hat("b", Price(2))))
+    val keys = hats keyedSave newHats map (_.key)
+    keys map (k => hats.lookup(k).get) should equal (newHats)
+  }
 }
 
 class AnyValSuite extends SageSuiteBase {
